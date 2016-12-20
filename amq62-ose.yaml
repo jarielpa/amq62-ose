@@ -1,0 +1,165 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: amq62-ose
+    name: amq62-openshift
+  spec:
+    tags:
+    - annotations:
+        openshift.io/imported-from: registry.access.redhat.com/jboss-amq-6/amq62-openshift
+      from:
+        kind: DockerImage
+        name: registry.access.redhat.com/jboss-amq-6/amq62-openshift
+      generation: null
+      importPolicy: {}
+      name: latest
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: amq62-ose
+    name: amq62-ose
+  spec: {}
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: amq62-ose
+    name: amq62-ose
+  spec:
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: amq62-ose:latest
+    postCommit: {}
+    resources: {}
+    source:
+      git:
+        uri: https://github.com/jarielpa/amq62-ose.git
+      type: Git
+    strategy:
+      dockerStrategy:
+        from:
+          kind: ImageStreamTag
+          name: amq62-openshift:latest
+      type: Docker
+    triggers:
+    - github:
+        secret: ylZ-IC9mQQKnh-44SPKF
+      type: GitHub
+    - generic:
+        secret: sGJSzFmwZk10EgA6p47F
+      type: Generic
+    - type: ConfigChange
+    - imageChange: {}
+      type: ImageChange
+  status:
+    lastVersion: 0
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: amq62-ose
+    name: amq62-ose
+  spec:
+    replicas: 1
+    selector:
+      app: amq62-ose
+      deploymentconfig: amq62-ose
+    strategy:
+      resources: {}
+    template:
+      metadata:
+        annotations:
+          openshift.io/container.amq62-ose.image.entrypoint: '["/opt/amq/bin/launch.sh"]'
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          app: amq62-ose
+          deploymentconfig: amq62-ose
+      spec:
+        containers:
+        - image: amq62-ose:latest
+          name: amq62-ose
+          ports:
+          - containerPort: 61616
+            protocol: TCP
+          - containerPort: 8778
+            protocol: TCP
+          - containerPort: 1883
+            protocol: TCP
+          - containerPort: 5672
+            protocol: TCP
+          - containerPort: 61613
+            protocol: TCP
+          resources: {}
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - amq62-ose
+        from:
+          kind: ImageStreamTag
+          name: amq62-ose:latest
+      type: ImageChange
+  status: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: amq62-ose
+    name: amq62-ose
+  spec:
+    ports:
+    - name: 1883-tcp
+      port: 1883
+      protocol: TCP
+      targetPort: 1883
+    - name: 5672-tcp
+      port: 5672
+      protocol: TCP
+      targetPort: 5672
+    - name: 8778-tcp
+      port: 8778
+      protocol: TCP
+      targetPort: 8778
+    - name: 61613-tcp
+      port: 61613
+      protocol: TCP
+      targetPort: 61613
+    - name: 61616-tcp
+      port: 61616
+      protocol: TCP
+      targetPort: 61616
+    selector:
+      app: amq62-ose
+      deploymentconfig: amq62-ose
+  status:
+    loadBalancer: {}
+kind: List
+metadata: {}
