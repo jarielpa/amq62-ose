@@ -114,7 +114,7 @@ objects:
                 fieldPath: metadata.namespace
           - name: AMQ_STORAGE_USAGE_LIMIT
             value: ${AMQ_STORAGE_USAGE_LIMIT}
-          image: amq62-ose
+          image: amq62test
           imagePullPolicy: Always
           name: ${APPLICATION_NAME}-amq
           ports:
@@ -147,7 +147,7 @@ objects:
         - ${APPLICATION_NAME}-amq
         from:
           kind: ImageStreamTag
-          name: amq62-ose:latest
+          name: amq62test:latest
           namespace: ${IMAGE_STREAM_NAMESPACE}
       type: ImageChange
     - type: ConfigChange
